@@ -2,11 +2,12 @@
 <html lang="no">
 <head>
     <meta charset="UTF-8">
+    
     <title>Partikkel-Portfolio med Dynamisk Layout</title>
     <style>
         body { 
             margin: 0; 
-            background-color: #000; 
+            background-color: rgb(0, 4, 19);
             color: #fff; 
             font-family: 'Helvetica Neue', sans-serif; 
             overflow: hidden; 
@@ -165,11 +166,11 @@
                 { text: "Drevet av Three.js\nog en custom partikkelmotor", fontSize: 32, color: '#ffffff' },
                 { text: "Takk for at du tok deg tid\ntil å se på prosjektet", fontSize: 32, color: '#ffffff' }
             ],
-            MAX_DIMENSION: 400, PARTICLE_SIZE: 0.8, TEXT_PARTICLE_SIZE: 1.5,
-            CAMERA_SMOOTHING: 0.08,
+            MAX_DIMENSION: 600, PARTICLE_SIZE: 0.8, TEXT_PARTICLE_SIZE: 1.5,
+            CAMERA_SMOOTHING: 0.8,
             BUILD_WAVE_DELAY: 0.4, BUILD_START_DISTANCE: 200, TRANSITION_WAVE_DELAY: 0.2,
             BUILD_CHAOS_STRENGTH: 5000, TRANSITION_CHAOS_STRENGTH: 800,
-            AMBIENT_STRENGTH: 10, AMBIENT_SPEED: 0.0015,
+            AMBIENT_STRENGTH: 100, AMBIENT_SPEED: 0.15,
         };
 
         gsap.registerPlugin(ScrollToPlugin);
@@ -650,26 +651,7 @@
         }
         
         setup().catch(err => console.error("Feil ved oppsett:", err));
-        // Kun reload ved betydelige størrelsesendringer
-let initialWidth = window.innerWidth;
-let initialHeight = window.innerHeight;
-let resizeTimeout;
-
-window.addEventListener('resize', () => {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
-        const currentWidth = window.innerWidth;
-        const currentHeight = window.innerHeight;
         
-        // Kun reload hvis vindusstørrelsen endres med mer enn 20%
-        const widthChange = Math.abs(currentWidth - initialWidth) / initialWidth;
-        const heightChange = Math.abs(currentHeight - initialHeight) / initialHeight;
-        
-        if (widthChange > 0.2 || heightChange > 0.2) {
-            window.location.reload();
-        }
-    }, 1000);
-});
     </script>
 </body>
 </html>

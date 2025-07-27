@@ -650,7 +650,26 @@
         }
         
         setup().catch(err => console.error("Feil ved oppsett:", err));
-        window.addEventListener('resize', () => { window.location.reload(); });
+        // Kun reload ved betydelige størrelsesendringer
+let initialWidth = window.innerWidth;
+let initialHeight = window.innerHeight;
+let resizeTimeout;
+
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+        const currentWidth = window.innerWidth;
+        const currentHeight = window.innerHeight;
+        
+        // Kun reload hvis vindusstørrelsen endres med mer enn 20%
+        const widthChange = Math.abs(currentWidth - initialWidth) / initialWidth;
+        const heightChange = Math.abs(currentHeight - initialHeight) / initialHeight;
+        
+        if (widthChange > 0.2 || heightChange > 0.2) {
+            window.location.reload();
+        }
+    }, 1000);
+});
     </script>
 </body>
 </html>

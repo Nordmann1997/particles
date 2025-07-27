@@ -11,6 +11,7 @@
             font-family: 'Helvetica Neue', sans-serif; 
             overflow: hidden; 
             visibility: hidden;
+            touch-action: none; /* Forhindrer touch scrolling */
         }
         canvas { 
             position: fixed; 
@@ -100,6 +101,22 @@
         .control-btn.active {
             background-color: rgba(255,255,255,0.4);
         }
+
+        #navigation-hint {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+        color: #fff;
+        font-size: 16px;
+        opacity: 0.8;
+        background-color: rgba(0,0,0,0.6);
+        padding: 10px 20px;
+        border-radius: 20px;
+        text-align: center;
+    }
+
     </style>
 </head>
 <body>
@@ -109,6 +126,8 @@
         <button class="control-btn" id="autoscroll-btn">Start Autoscroll</button>
         <button class="control-btn" id="reset-btn">Reset</button>
     </div>
+
+    <div id="navigation-hint">Bruk piltastene for å navigere</div>
     
     <div id="content-container">
         <div class="scroll-section"><div id="image-ref-1" class="image-reference"></div><div id="text-ref-1" class="text-reference"></div></div>
@@ -307,6 +326,54 @@
             const initialX = startSection.offsetLeft + startSection.offsetWidth / 2 - window.innerWidth / 2;
             const initialY = startSection.offsetTop + startSection.offsetHeight / 2 - window.innerHeight / 2;
             window.scrollTo(initialX, initialY);
+
+            // Touch swipe detection og prevent native scrolling
+                let touchStartY = 0;
+                let touchStartTime = 0;
+
+                document.addEventListener('touchstart', (e) => {
+                    if (e.target.tagName !== 'BUTTON') {
+                        e.preventDefault();
+                        touchStartY = e.touches[0].clientY;
+                        touchStartTime = Date.now();
+                    }
+                }, { passive: false });
+
+                document.addEventListener('touchmove', (e) => {
+                    e.preventDefault();
+                }, { passive: false });
+
+                document.addEventListener('touchend', (e) => {
+                    if (e.target.tagName !== 'BUTTON') {
+                        e.preventDefault();
+                        
+                        const touchEndY = e.changedTouches[0].clientY;
+                        const touchEndTime = Date.now();
+                        const deltaY = touchStartY - touchEndY;
+                        const deltaTime = touchEndTime - touchStartTime;
+                        
+                        // Sjekk for gyldig swipe (minimum 50px, maksimum 500ms)
+                        if (Math.abs(deltaY) > 50 && deltaTime < 500) {
+                            if (isAnimatingScroll) return;
+                            
+                            if (isAutoScrolling) {
+                                stopAutoScroll();
+                            }
+                            
+                            if (deltaY > 0) {
+                                // Swipe opp = neste seksjon
+                                if (currentSection < scrollSections.length - 1) {
+                                    navigateToSection(currentSection + 1);
+                                }
+                            } else {
+                                // Swipe ned = forrige seksjon
+                                if (currentSection > -1) {
+                                    navigateToSection(currentSection - 1);
+                                }
+                            }
+                        }
+                    }
+                }, { passive: false });
             
             requestAnimationFrame(() => {
                 animate(); 

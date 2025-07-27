@@ -2,23 +2,38 @@
 <html lang="no">
 <head>
     <meta charset="UTF-8">
-    <title>Partikkel-Portfolio med Piltast-navigasjon</title>
+    <title>Partikkel-Portfolio med Dynamisk Layout</title>
     <style>
-        body { margin: 0; background-color: #000; color: #fff; font-family: 'Helvetica Neue', sans-serif; overflow: hidden; }
-        canvas { position: fixed; top: 0; left: 0; z-index: 1; pointer-events: none; }
+        body { 
+            margin: 0; 
+            background-color: #000; 
+            color: #fff; 
+            font-family: 'Helvetica Neue', sans-serif; 
+            overflow: hidden; 
+            visibility: hidden;
+        }
+        canvas { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            z-index: 1; 
+            pointer-events: none; 
+        }
         
         #content-container {
             position: relative;
             z-index: 2;
-            width: 100%;
+            width: 500vw;
+            height: 500vh;
         }
         
         .scroll-section {
+            position: absolute;
+            width: 100vw;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            position: relative;
-            height: 300vh;
         }
 
         .text-reference, .image-reference {
@@ -45,83 +60,67 @@
         #image-ref-6 { top: 50%; left: 70%; transform: translate(-50%, -50%); }
         #text-ref-6  { top: 50%; left: 30%; transform: translate(-50%, -50%); width: 450px; }
 
-        #image-ref-7 { top: 50%; left: 30%; transform: translate(-50%, -50%); }
-        #text-ref-7  { top: 50%; left: 70%; transform: translate(-50%, -50%); width: 450px; }
-
-        /* Enkel velkomsttekst som overlay */
-        #welcome-overlay {
+        #progress-indicator {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-            text-align: center;
-            font-size: 36px;
-            font-weight: bold;
-            transition: opacity 0.5s ease;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+            color: #fff;
+            font-size: 14px;
+            opacity: 0.8;
+            background-color: rgba(0,0,0,0.6);
+            padding: 5px 10px;
+            border-radius: 5px;
         }
 
-        /* Touch indicator */
-        #touch-indicator {
+        #autoscroll-controls {
             position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 50;
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 14px;
-            text-align: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
+            top: 20px;
+            right: 20px;
+            z-index: 10;
+            display: flex;
+            gap: 10px;
+        }
+
+        .control-btn {
+            background-color: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background-color 0.3s;
+        }
+
+        .control-btn:hover {
+            background-color: rgba(255,255,255,0.3);
+        }
+
+        .control-btn.active {
+            background-color: rgba(255,255,255,0.4);
         }
     </style>
 </head>
 <body>
-    <!-- Enkel overlay som kan skjules -->
-    <div id="welcome-overlay">
-        Velkommen til min portefølje<br><br>
-        Trykk en tast eller swipe for å starte
-    </div>
-
-    <!-- Touch indicator -->
-    <div id="touch-indicator">
-        Swipe opp/ned eller bruk piltastene for å navigere
-    </div>
-
     <canvas id="particle-canvas"></canvas>
+    <div id="progress-indicator"></div>
+    <div id="autoscroll-controls">
+        <button class="control-btn" id="autoscroll-btn">Start Autoscroll</button>
+        <button class="control-btn" id="reset-btn">Reset</button>
+    </div>
     
     <div id="content-container">
-        <div class="scroll-section">
-            <div id="image-ref-1" class="image-reference"></div> <div id="text-ref-1" class="text-reference"></div>
-        </div>
-        <div class="scroll-section">
-            <div id="image-ref-2" class="image-reference"></div> <div id="text-ref-2" class="text-reference"></div>
-        </div>
-        <div class="scroll-section">
-             <div id="image-ref-3" class="image-reference"></div> <div id="text-ref-3" class="text-reference"></div>
-        </div>
-        <div class="scroll-section">
-             <div id="image-ref-4" class="image-reference"></div> <div id="text-ref-4" class="text-reference"></div>
-        </div>
-        <div class="scroll-section">
-             <div id="image-ref-5" class="image-reference"></div> <div id="text-ref-5" class="text-reference"></div>
-        </div>
-        <div class="scroll-section">
-             <div id="image-ref-6" class="image-reference"></div> <div id="text-ref-6" class="text-reference"></div>
-        </div>
-        <div class="scroll-section">
-             <div id="image-ref-7" class="image-reference"></div> <div id="text-ref-7" class="text-reference"></div>
-        </div>
+        <div class="scroll-section"><div id="image-ref-1" class="image-reference"></div><div id="text-ref-1" class="text-reference"></div></div>
+        <div class="scroll-section"><div id="image-ref-2" class="image-reference"></div><div id="text-ref-2" class="text-reference"></div></div>
+        <div class="scroll-section"><div id="image-ref-3" class="image-reference"></div><div id="text-ref-3" class="text-reference"></div></div>
+        <div class="scroll-section"><div id="image-ref-4" class="image-reference"></div><div id="text-ref-4" class="text-reference"></div></div>
+        <div class="scroll-section"><div id="image-ref-5" class="image-reference"></div><div id="text-ref-5" class="text-reference"></div></div>
+        <div class="scroll-section"><div id="image-ref-6" class="image-reference"></div><div id="text-ref-6" class="text-reference"></div></div>
     </div>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
-
     <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
     <script type="importmap">
         { "imports": { "three": "https://unpkg.com/three@0.156.1/build/three.module.js" } }
@@ -129,9 +128,9 @@
     <script type="module">
         import * as THREE from 'three';
 
+        // --- INNSTILLINGER ---
         const settings = {
             IMAGE_URLS: [ 
-                'https://static.vecteezy.com/system/resources/previews/006/911/398/non_2x/rainbow-waves-background-free-vector.jpg',
                 'https://jwk.no/bubbles%202/pictures/index/ludo.jpg', 
                 'https://jwk.no/bubbles%202/pictures/index/stolen.jpg',
                 'https://jwk.no/bubbles%202/pictures/index/oval.jpg',
@@ -140,16 +139,14 @@
                 'https://jwk.no/bubbles%202/pictures/index/benk.jpg'
             ],
             TEXTS: [
-                { text: "Velkommen til en reise\ngjennom farger og former", fontSize: 32, color: '#ffffff' },
+                { text: "Velkommen til min portefølje\nTrykk Start Autoscroll eller bruk piltastene", fontSize: 40, color: '#ffffff' },
                 { text: "Hvert design er bygget opp\nav tusenvis av lyspunkt", fontSize: 32, color: '#ffffff' },
                 { text: "Form og farge flyter over\ni en sømløs overgang", fontSize: 32, color: '#ffffff' },
                 { text: "Teksten følger den samme\nreisen som bildene", fontSize: 32, color: '#ffffff' },
                 { text: "Drevet av Three.js\nog en custom partikkelmotor", fontSize: 32, color: '#ffffff' },
-                { text: "Takk for at du tok deg tid\ntil å se på prosjektet", fontSize: 32, color: '#ffffff' },
-                { text: "Slutt på presentasjonen", fontSize: 32, color: '#ffffff' }
+                { text: "Takk for at du tok deg tid\ntil å se på prosjektet", fontSize: 32, color: '#ffffff' }
             ],
             MAX_DIMENSION: 400, PARTICLE_SIZE: 0.8, TEXT_PARTICLE_SIZE: 1.5,
-            SCROLL_DAMPENING: 0.05,
             CAMERA_SMOOTHING: 0.08,
             BUILD_WAVE_DELAY: 0.4, BUILD_START_DISTANCE: 200, TRANSITION_WAVE_DELAY: 0.2,
             BUILD_CHAOS_STRENGTH: 5000, TRANSITION_CHAOS_STRENGTH: 800,
@@ -166,20 +163,23 @@
         
         let imageParticlesData = [], textParticlesData = [];
         let imageGeometry, textGeometry, imagePoints, textPoints;
-        let imageRefs = [], textRefs = [];
-        let smoothScrollProgress = 0, smoothCameraY = 0;
+        let imageRefs = [], textRefs = [], scrollSections = [];
         let clock = new THREE.Clock();
 
-        let currentSectionIndex = 0;
+        let currentStopIndex = 0;
         let isAnimatingScroll = false;
-        const totalSections = settings.IMAGE_URLS.length;
-
-        // Touch handling variables
-        let touchStartY = 0;
-        let touchStartTime = 0;
-        let lastTouchMove = 0;
-        const minSwipeDistance = 50;
-        const maxSwipeTime = 300;
+        let isAutoScrolling = false;
+        let autoScrollInterval = null;
+        
+        // NYTT: Bruker -1 for å indikere oppløst tilstand (seksjon 1)
+        let currentSection = -1; // -1 = oppløst, 0 = første bilde/tekst, 1 = andre bilde/tekst, osv.
+        
+        let transitionState = { progress: 0.0, buildProgress: 0.0 }; 
+        let fromIndex = 0;
+        let toIndex = 0;
+        
+        const TRANSITION_DURATION = 5.0;
+        const AUTOSCROLL_DELAY = 1000;
 
         const lerp = (a, b, t) => a + (b - a) * t;
         const easeOutQuart = t => 1 - Math.pow(1 - t, 4);
@@ -213,20 +213,43 @@
         }
         
         const createRandomOffsets = () => ({
-            randomOffset: Math.random(), chaosOffsetX: (Math.random()-0.5), chaosOffsetY: (Math.random()-0.5), chaosOffsetZ: (Math.random()-0.5),
+             randomOffset: Math.random(), chaosOffsetX: (Math.random()-0.5), chaosOffsetY: (Math.random()-0.5), chaosOffsetZ: (Math.random()-0.5),
             ambientAngle: Math.random()*Math.PI*2, ambientSpeed: settings.AMBIENT_SPEED*(0.5+Math.random()*0.5)
         });
 
         async function setup() {
             document.querySelectorAll('.image-reference').forEach(el => imageRefs.push(el));
             document.querySelectorAll('.text-reference').forEach(el => textRefs.push(el));
+            scrollSections = Array.from(document.querySelectorAll('.scroll-section'));
+
+            const contentContainer = document.getElementById('content-container');
+            const containerW = contentContainer.offsetWidth - window.innerWidth;
+            const containerH = contentContainer.offsetHeight - window.innerHeight;
+            let positions = [];
+            const startX = containerW / 2;
+            const startY = 0;
+            positions.push({ x: startX, y: startY });
+            const minDistance = window.innerWidth * 0.8; 
+            for (let i = 1; i < scrollSections.length; i++) {
+                let newPos;
+                let attempts = 0;
+                do {
+                    newPos = { x: Math.random() * containerW, y: Math.random() * containerH };
+                    attempts++;
+                } while (positions.some(p => Math.hypot(p.x - newPos.x, p.y - newPos.y) < minDistance) && attempts < 50);
+                positions.push(newPos);
+            }
+            scrollSections.forEach((section, index) => {
+                section.style.left = `${positions[index].x}px`;
+                section.style.top = `${positions[index].y}px`;
+            });
             
             const textures = await Promise.all(settings.IMAGE_URLS.map(url => new THREE.TextureLoader().loadAsync(url)));
             textures.forEach(t => t.colorSpace = THREE.SRGBColorSpace);
             const ratio = textures[0].image.naturalWidth / textures[0].image.naturalHeight;
             const displayW = settings.MAX_DIMENSION; const displayH = settings.MAX_DIMENSION / ratio;
             imageRefs.forEach(ref => { ref.style.width = `${displayW}px`; ref.style.height = `${displayH}px`; });
-            textRefs.forEach(ref => { ref.style.height = `${displayH}px`; });
+            textRefs.forEach(ref => { ref.style.width = '450px'; ref.style.height = `${displayH}px`; }); 
             
             const allImageData = textures.map(tex => {
                 const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
@@ -251,135 +274,191 @@
                 }
             }
             imageParticlesData.forEach(p => { p.normalizedY = (p.relativeY - imgMinY) / (imgMaxY - imgMinY || 1); });
+            
             const allTextPixels = settings.TEXTS.map(t => getTextPixelData(t.text, t.fontSize, t.color));
-            const maxTextParticles = Math.max(...allTextPixels.map(p => p.length));
-            for (let i = 0; i < maxTextParticles; i++) {
-                textParticlesData.push({
-                    relativePositions: allTextPixels.map(pixels => pixels[i % pixels.length]),
-                    colors: allTextPixels.map(pixels => new THREE.Color(pixels.color).convertSRGBToLinear()),
-                    normalizedY: allTextPixels[0][i % allTextPixels[0].length].normalizedY,
-                    ...createRandomOffsets()
-                });
+            const maxTextParticles = Math.max(0, ...allTextPixels.map(p => p.length));
+            
+            if (maxTextParticles > 0) {
+                for (let i = 0; i < maxTextParticles; i++) {
+                    textParticlesData.push({
+                        relativePositions: allTextPixels.map(pixels => {
+                            if (pixels.length === 0) return { x: 0, y: 0, normalizedY: 0.5 };
+                            return pixels[i % pixels.length];
+                        }),
+                        colors: settings.TEXTS.map(text => new THREE.Color(text.color).convertSRGBToLinear()),
+                        normalizedY: allTextPixels[0].length > 0 ? (allTextPixels[0][i % allTextPixels[0].length]?.normalizedY || 0.5) : 0.5,
+                        ...createRandomOffsets()
+                    });
+                }
             }
 
             createGeometry();
             setupNavigation();
-            animate();
+            setupAutoScroll();
+            
+            // Start med oppløste partikler (seksjon -1)
+            currentSection = -1;
+            fromIndex = 0;
+            toIndex = 0;
+            transitionState.progress = 1.0;
+            transitionState.buildProgress = 0.0;
+            
+            const startSection = scrollSections[0];
+            const initialX = startSection.offsetLeft + startSection.offsetWidth / 2 - window.innerWidth / 2;
+            const initialY = startSection.offsetTop + startSection.offsetHeight / 2 - window.innerHeight / 2;
+            window.scrollTo(initialX, initialY);
+            
+            requestAnimationFrame(() => {
+                animate(); 
+                document.body.style.visibility = 'visible';
+            });
         }
         
         function setupNavigation() {
-            let welcomeHidden = false;
-            
-            // Helper function to navigate sections
-            function navigateToSection(direction) {
-                if (isAnimatingScroll) return false;
+             window.addEventListener('keydown', (e) => {
+                if (isAnimatingScroll) return;
                 
-                if (direction === 'next' && currentSectionIndex < totalSections - 1) {
-                    currentSectionIndex++;
-                    scrollToSection(currentSectionIndex);
-                    return true;
-                } else if (direction === 'prev' && currentSectionIndex > 0) {
-                    currentSectionIndex--;
-                    scrollToSection(currentSectionIndex);
-                    return true;
+                if (isAutoScrolling) {
+                    stopAutoScroll();
                 }
-                return false;
-            }
-
-            // Helper function to hide welcome overlay
-            function hideWelcomeOverlay() {
-                if (!welcomeHidden) {
-                    document.getElementById('welcome-overlay').style.opacity = '0';
-                    setTimeout(() => {
-                        document.getElementById('welcome-overlay').style.display = 'none';
-                        // Show touch indicator briefly after welcome is hidden
-                        const indicator = document.getElementById('touch-indicator');
-                        indicator.style.opacity = '1';
-                        setTimeout(() => {
-                            indicator.style.opacity = '0';
-                        }, 3000);
-                    }, 500);
-                    welcomeHidden = true;
-                    return true;
-                }
-                return false;
-            }
-            
-            // Keyboard navigation
-            window.addEventListener('keydown', (e) => {
-                // Hide welcome on first key press
-                if (hideWelcomeOverlay()) return;
                 
                 if (e.key === 'ArrowDown') {
-                    navigateToSection('next');
+                    if (currentSection < scrollSections.length - 1) {
+                        const nextSection = currentSection + 1;
+                        navigateToSection(nextSection);
+                    }
                 } else if (e.key === 'ArrowUp') {
-                    navigateToSection('prev');
-                }
-            });
-
-            // Touch navigation
-            window.addEventListener('touchstart', (e) => {
-                // Hide welcome on first touch
-                if (hideWelcomeOverlay()) {
-                    e.preventDefault();
-                    return;
-                }
-
-                touchStartY = e.touches[0].clientY;
-                touchStartTime = Date.now();
-                lastTouchMove = touchStartY;
-            }, { passive: false });
-
-            window.addEventListener('touchmove', (e) => {
-                if (!welcomeHidden) {
-                    e.preventDefault();
-                    return;
-                }
-                
-                lastTouchMove = e.touches[0].clientY;
-                // Prevent default scrolling behavior
-                e.preventDefault();
-            }, { passive: false });
-
-            window.addEventListener('touchend', (e) => {
-                if (!welcomeHidden) return;
-                
-                const touchEndY = lastTouchMove;
-                const touchDuration = Date.now() - touchStartTime;
-                const swipeDistance = touchStartY - touchEndY;
-                const swipeSpeed = Math.abs(swipeDistance) / touchDuration;
-
-                // Check if it's a valid swipe
-                if (touchDuration <= maxSwipeTime && Math.abs(swipeDistance) >= minSwipeDistance) {
-                    if (swipeDistance > 0) {
-                        // Swipe up = next section
-                        navigateToSection('next');
-                    } else {
-                        // Swipe down = previous section  
-                        navigateToSection('prev');
+                    if (currentSection > -1) {
+                        const prevSection = currentSection - 1;
+                        navigateToSection(prevSection);
                     }
                 }
-                
-                e.preventDefault();
-            }, { passive: false });
-
-            // Prevent default touch behaviors that might interfere
-            window.addEventListener('touchcancel', (e) => {
-                e.preventDefault();
-            }, { passive: false });
+            });
         }
 
-        function scrollToSection(index) {
-            isAnimatingScroll = true;
-            const totalScrollHeight = document.body.scrollHeight - window.innerHeight;
-            const targetScrollY = (index / (totalSections - 1)) * totalScrollHeight;
+        function setupAutoScroll() {
+            const autoscrollBtn = document.getElementById('autoscroll-btn');
+            const resetBtn = document.getElementById('reset-btn');
 
-            gsap.to(window, {
-                scrollTo: { y: targetScrollY, autoKill: true },
-                duration: 5.5,
-                ease: "power2.inOut",
-                onComplete: () => { isAnimatingScroll = false; }
+            autoscrollBtn.addEventListener('click', () => {
+                if (isAutoScrolling) {
+                    stopAutoScroll();
+                } else {
+                    startAutoScroll();
+                }
             });
+
+            resetBtn.addEventListener('click', () => {
+                resetToStart();
+            });
+        }
+
+        function startAutoScroll() {
+            if (isAnimatingScroll) return;
+            
+            isAutoScrolling = true;
+            document.getElementById('autoscroll-btn').textContent = 'Stopp Autoscroll';
+            document.getElementById('autoscroll-btn').classList.add('active');
+            
+            // Start autoscroll med riktig delay
+            autoScrollInterval = setTimeout(() => {
+                autoScrollNext();
+            }, AUTOSCROLL_DELAY);
+        }
+
+        function stopAutoScroll() {
+            if (!isAutoScrolling) return;
+            
+            isAutoScrolling = false;
+            if (autoScrollInterval) {
+                clearTimeout(autoScrollInterval);
+                autoScrollInterval = null;
+            }
+            
+            document.getElementById('autoscroll-btn').textContent = 'Start Autoscroll';
+            document.getElementById('autoscroll-btn').classList.remove('active');
+        }
+
+        function autoScrollNext() {
+            if (!isAutoScrolling) return;
+            
+            // Gå til neste seksjon, eller tilbake til start
+            const nextSection = currentSection < scrollSections.length - 1 ? currentSection + 1 : -1;
+            navigateToSection(nextSection);
+            
+            // Sett opp neste autoscroll
+            autoScrollInterval = setTimeout(() => {
+                autoScrollNext();
+            }, AUTOSCROLL_DELAY);
+        }
+
+        function resetToStart() {
+            stopAutoScroll();
+            
+            // Reset til oppløst tilstand (seksjon -1)
+            currentSection = -1;
+            transitionState.buildProgress = 0.0;
+            transitionState.progress = 1.0;
+            currentStopIndex = 0;
+            fromIndex = 0;
+            toIndex = 0;
+            
+            const startSection = scrollSections[0];
+            const initialX = startSection.offsetLeft + startSection.offsetWidth / 2 - window.innerWidth / 2;
+            const initialY = startSection.offsetTop + startSection.offsetHeight / 2 - window.innerHeight / 2;
+            window.scrollTo(initialX, initialY);
+        }
+
+        function navigateToSection(targetSection) {
+            if (targetSection < -1 || targetSection >= scrollSections.length) return;
+
+            isAnimatingScroll = true;
+            
+            if (targetSection === -1) {
+                // Gå tilbake til oppløst tilstand
+                const tl = gsap.timeline({
+                    onComplete: () => {
+                        isAnimatingScroll = false;
+                        currentSection = -1;
+                    }
+                });
+                
+                tl.to(transitionState, { 
+                    buildProgress: 0.0, 
+                    duration: TRANSITION_DURATION, 
+                    ease: "power3.inOut" 
+                });
+                
+            } else {
+                // Gå til et bilde/tekst
+                const section = scrollSections[targetSection];
+                const targetX = section.offsetLeft + section.offsetWidth / 2 - window.innerWidth / 2;
+                const targetY = section.offsetTop + section.offsetHeight / 2 - window.innerHeight / 2;
+                
+                fromIndex = currentStopIndex;
+                toIndex = targetSection;
+                
+                const ease = "power3.inOut";
+
+                const tl = gsap.timeline({
+                    onComplete: () => {
+                        isAnimatingScroll = false;
+                        currentSection = targetSection;
+                        currentStopIndex = targetSection;
+                    }
+                });
+
+                tl.to(window, { scrollTo: { x: targetX, y: targetY }, duration: TRANSITION_DURATION, ease: ease }, 0);
+                
+                transitionState.progress = 0;
+                tl.to(transitionState, { progress: 1.0, duration: TRANSITION_DURATION, ease: ease }, 0);
+                tl.to(transitionState, { buildProgress: 1.0, duration: TRANSITION_DURATION, ease: ease }, 0);
+            }
+        }
+
+        // Bakoverkompatibilitet
+        function navigateTo(stopIndex) {
+            navigateToSection(stopIndex);
         }
         
         function createGeometry() {
@@ -388,11 +467,14 @@
             imageGeometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(imageParticlesData.length * 3), 3));
             imagePoints = new THREE.Points(imageGeometry, new THREE.PointsMaterial({ size: settings.PARTICLE_SIZE, vertexColors: true, sizeAttenuation: false }));
             scene.add(imagePoints);
-            textGeometry = new THREE.BufferGeometry();
-            textGeometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(textParticlesData.length * 3), 3));
-            textGeometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(textParticlesData.length * 3), 3));
-            textPoints = new THREE.Points(textGeometry, new THREE.PointsMaterial({ size: settings.TEXT_PARTICLE_SIZE, vertexColors: true, sizeAttenuation: false }));
-            scene.add(textPoints);
+            
+            if (textParticlesData.length > 0) {
+                textGeometry = new THREE.BufferGeometry();
+                textGeometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(textParticlesData.length * 3), 3));
+                textGeometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(textParticlesData.length * 3), 3));
+                textPoints = new THREE.Points(textGeometry, new THREE.PointsMaterial({ size: settings.TEXT_PARTICLE_SIZE, vertexColors: true, sizeAttenuation: false }));
+                scene.add(textPoints);
+            }
         }
 
         const getRefPos = (ref) => {
@@ -403,66 +485,72 @@
         function animate() {
             requestAnimationFrame(animate);
             const time = clock.getElapsedTime();
-            const totalScrollHeight = document.body.scrollHeight - window.innerHeight;
-            const rawScrollProgress = totalScrollHeight > 0 ? window.scrollY / totalScrollHeight : 0;
-            smoothScrollProgress = lerp(smoothScrollProgress, rawScrollProgress, settings.SCROLL_DAMPENING);
-
-            let avgY = 0;
-
-            const globalProgress = smoothScrollProgress * (totalSections - 1);
-            const fromIndex = Math.floor(globalProgress);
-            const toIndex = Math.min(fromIndex + 1, totalSections - 1);
-            const localProgress = globalProgress - fromIndex;
             
-            const buildProgress = smoothScrollProgress * (totalSections - 1);
-            let currentChaosStrength = lerp(settings.BUILD_CHAOS_STRENGTH, settings.TRANSITION_CHAOS_STRENGTH, easeOutQuart(buildProgress < 1 ? buildProgress : 1));
+            const localProgress = transitionState.progress;
+            const buildProgress = transitionState.buildProgress;
+
+            const sectionText = currentSection === -1 ? "Oppløst" : `Seksjon ${currentSection + 1}`;
+            document.getElementById('progress-indicator').textContent = `${sectionText} | Build: ${(buildProgress * 100).toFixed(0)}% ${isAutoScrolling ? '| AutoScroll: ON' : ''}`;
+            
+            const currentChaosStrength = lerp(settings.BUILD_CHAOS_STRENGTH, settings.TRANSITION_CHAOS_STRENGTH, easeOutQuart(buildProgress));
+            
+            let avgY = 0;
+            let totalParticles = 0;
 
             const imageStartRef = getRefPos(imageRefs[fromIndex]);
             const imageEndRef = getRefPos(imageRefs[toIndex]);
-            const textStartRef = getRefPos(textRefs[fromIndex]);
-            const textEndRef = getRefPos(textRefs[toIndex]);
             
             const imagePositions = imageGeometry.attributes.position.array;
             const imageColors = imageGeometry.attributes.color.array;
             for (let i = 0; i < imageParticlesData.length; i++) {
                 const p = imageParticlesData[i];
-                const finalState = updateParticle(p, localProgress, buildProgress, currentChaosStrength, time, imageStartRef, imageEndRef, p.relativeX, p.relativeY, fromIndex, toIndex);
+                const finalState = updateParticle(p, localProgress, buildProgress, currentChaosStrength, time, imageStartRef, imageEndRef, p.relativeX, p.relativeY, fromIndex, toIndex, p.colors);
                 finalState.pos.toArray(imagePositions, i * 3);
                 finalState.color.toArray(imageColors, i * 3);
                 avgY += finalState.pos.y;
             }
-            const textPositions = textGeometry.attributes.position.array;
-            const textColors = textGeometry.attributes.color.array;
-            for (let i = 0; i < textParticlesData.length; i++) {
-                const p = textParticlesData[i];
-                const rStartX = p.relativePositions[fromIndex].x;
-                const rStartY = p.relativePositions[fromIndex].y;
-                const rEndX = p.relativePositions[toIndex].x;
-                const rEndY = p.relativePositions[toIndex].y;
-                const rX = lerp(rStartX, rEndX, easeInOutCubic(localProgress));
-                const rY = lerp(rStartY, rEndY, easeInOutCubic(localProgress));
-                const finalState = updateParticle(p, localProgress, buildProgress, currentChaosStrength/2, time, textStartRef, textEndRef, rX, rY, fromIndex, toIndex);
-                finalState.pos.toArray(textPositions, i * 3);
-                finalState.color.set(settings.TEXTS[fromIndex].color).convertSRGBToLinear().toArray(textColors, i*3);
-                avgY += finalState.pos.y;
+            totalParticles += imageParticlesData.length;
+            imageGeometry.attributes.position.needsUpdate = true;
+            imageGeometry.attributes.color.needsUpdate = true;
+            
+            if (textParticlesData.length > 0) {
+                const textStartRef = getRefPos(textRefs[fromIndex]);
+                const textEndRef = getRefPos(textRefs[toIndex]);
+                const textPositions = textGeometry.attributes.position.array;
+                const textColors = textGeometry.attributes.color.array;
+                for (let i = 0; i < textParticlesData.length; i++) {
+                    const p = textParticlesData[i];
+                    const rStartX = p.relativePositions[fromIndex]?.x || 0;
+                    const rStartY = p.relativePositions[fromIndex]?.y || 0;
+                    const rEndX = p.relativePositions[toIndex]?.x || 0;
+                    const rEndY = p.relativePositions[toIndex]?.y || 0;
+                    const rX = lerp(rStartX, rEndX, easeInOutCubic(localProgress));
+                    const rY = lerp(rStartY, rEndY, easeInOutCubic(localProgress));
+                    
+                    const fromColor = p.colors[fromIndex];
+                    const toColor = p.colors[toIndex];
+                    const finalTextColor = fromColor.clone().lerp(toColor, easeInOutCubic(localProgress));
+                    
+                    const finalState = updateParticle(p, localProgress, buildProgress, currentChaosStrength/2, time, textStartRef, textEndRef, rX, rY, fromIndex, toIndex, null, finalTextColor);
+                    finalState.pos.toArray(textPositions, i * 3);
+                    finalState.color.toArray(textColors, i * 3);
+                    avgY += finalState.pos.y;
+                }
+                totalParticles += textParticlesData.length;
+                textGeometry.attributes.position.needsUpdate = true;
+                textGeometry.attributes.color.needsUpdate = true;
             }
-
-            const totalParticles = imageParticlesData.length + textParticlesData.length;
+            
             if (totalParticles > 0) avgY /= totalParticles;
 
             if (!isNaN(avgY)) {
-                smoothCameraY = lerp(smoothCameraY, avgY, settings.CAMERA_SMOOTHING);
-                camera.position.y = smoothCameraY;
+                camera.position.y = lerp(camera.position.y, avgY, settings.CAMERA_SMOOTHING);
             }
             
-            imageGeometry.attributes.position.needsUpdate = true;
-            imageGeometry.attributes.color.needsUpdate = true;
-            textGeometry.attributes.position.needsUpdate = true;
-            textGeometry.attributes.color.needsUpdate = true;
             renderer.render(scene, camera);
         }
 
-        function updateParticle(p, localProgress, buildProgress, chaosStrength, time, startRef, endRef, relativeX, relativeY, fromIndex, toIndex) {
+        function updateParticle(p, localProgress, buildProgress, chaosStrength, time, startRef, endRef, relativeX, relativeY, fromIdx, toIdx, colors, overrideColor = null) {
             const personalBuildProgress = easeOutQuart(Math.max(0, Math.min(1, (buildProgress - p.normalizedY * settings.BUILD_WAVE_DELAY) / (1 - settings.BUILD_WAVE_DELAY || 1))));
             const transitionDelay = p.normalizedY * settings.TRANSITION_WAVE_DELAY + p.randomOffset * 0.15;
             const personalTransitionProgress = easeInOutCubic(Math.max(0, Math.min(1, (localProgress - transitionDelay) / (1 - transitionDelay || 1))));
@@ -470,11 +558,17 @@
             const anchorX = lerp(startRef.x, endRef.x, personalTransitionProgress) + relativeX;
             const anchorY = lerp(startRef.y, endRef.y, personalTransitionProgress) + relativeY;
 
-            const fromColor = p.colors ? p.colors[fromIndex] : null;
-            const toColor = p.colors ? p.colors[toIndex] : null;
-            const finalColor = fromColor && toColor ? fromColor.clone().lerp(toColor, personalTransitionProgress) : new THREE.Color(settings.TEXTS[0].color);
+            let finalColor;
+            if (overrideColor) {
+                finalColor = overrideColor;
+            } else {
+                finalColor = colors[fromIdx].clone().lerp(colors[toIdx], personalTransitionProgress);
+            }
 
-            const chaosFactor = (1 - personalBuildProgress) + Math.sin(personalTransitionProgress * Math.PI) * 0.8;
+            const transitionChaos = Math.sin(personalTransitionProgress * Math.PI);
+            const buildChaos = 1 - personalBuildProgress;
+            const chaosFactor = buildChaos + transitionChaos * 0.8;
+            
             const buildOffsetY = settings.BUILD_START_DISTANCE * (1 - personalBuildProgress);
             const ambientX = Math.cos(p.ambientAngle + time * p.ambientSpeed) * settings.AMBIENT_STRENGTH;
             const ambientY = Math.sin(p.ambientAngle + time * p.ambientSpeed) * settings.AMBIENT_STRENGTH;

@@ -5,138 +5,372 @@
     
     <title>Partikkel-Portfolio med Dynamisk Layout</title>
     <style>
-        body { 
-            margin: 0; 
-            background-color: rgb(0, 4, 19);
-            color: #fff; 
-            font-family: 'Helvetica Neue', sans-serif; 
-            overflow: hidden; 
-            visibility: hidden;
-            touch-action: none; /* Forhindrer touch scrolling */
-        }
-        canvas { 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            z-index: 1; 
-            pointer-events: none; 
-        }
-        
-        #content-container {
-            position: relative;
-            z-index: 2;
-            width: 500vw;
-            height: 500vh;
-        }
-        
-        .scroll-section {
-            position: absolute;
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+          body { 
+    margin: 0; 
+    background: linear-gradient(135deg, rgb(0, 4, 19) 0%, rgb(41, 55, 82) 50%, rgb(0, 4, 19) 100%);
+    color: #fff; 
+    font-family: 'Helvetica Neue', sans-serif; 
+    overflow: hidden; 
+    visibility: hidden;
+    touch-action: none;
+}
 
-        .text-reference, .image-reference {
-            position: absolute;
-            opacity: 0; 
-            pointer-events: none;
-        }
-        
-        #image-ref-1 { top: 50%; left: 30%; transform: translate(-50%, -50%); }
-        #text-ref-1  { top: 50%; left: 70%; transform: translate(-50%, -50%); width: 450px; }
+canvas { 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    z-index: 1; 
+    pointer-events: none; 
+}
 
-        #image-ref-2 { top: 50%; left: 70%; transform: translate(-50%, -50%); }
-        #text-ref-2  { top: 50%; left: 30%; transform: translate(-50%, -50%); width: 450px; }
-        
-        #image-ref-3 { top: 50%; left: 30%; transform: translate(-50%, -50%); }
-        #text-ref-3  { top: 50%; left: 70%; transform: translate(-50%, -50%); width: 450px; }
-        
-        #image-ref-4 { top: 50%; left: 70%; transform: translate(-50%, -50%); }
-        #text-ref-4  { top: 50%; left: 30%; transform: translate(-50%, -50%); width: 450px; }
-        
-        #image-ref-5 { top: 50%; left: 30%; transform: translate(-50%, -50%); }
-        #text-ref-5  { top: 50%; left: 70%; transform: translate(-50%, -50%); width: 450px; }
-        
-        #image-ref-6 { top: 50%; left: 70%; transform: translate(-50%, -50%); }
-        #text-ref-6  { top: 50%; left: 30%; transform: translate(-50%, -50%); width: 450px; }
+#content-container {
+    position: relative;
+    z-index: 2;
+    width: 500vw;
+    height: 500vh;
+}
 
-        #progress-indicator {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 10;
-            color: #fff;
-            font-size: 14px;
-            opacity: 0.8;
-            background-color: rgba(0,0,0,0.6);
-            padding: 5px 10px;
-            border-radius: 5px;
-        }
+.scroll-section {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
-        #autoscroll-controls {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 10;
-            display: flex;
-            gap: 10px;
-        }
+.text-reference, .image-reference {
+    position: absolute;
+    opacity: 0; 
+    pointer-events: none;
+}
 
-        .control-btn {
-            background-color: rgba(255,255,255,0.2);
-            border: 1px solid rgba(255,255,255,0.3);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: background-color 0.3s;
-        }
+.image-clickable {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 5;
+    cursor: pointer;
+    background: transparent;
+    pointer-events: auto;
+}
 
-        .control-btn:hover {
-            background-color: rgba(255,255,255,0.3);
-        }
+.image-clickable:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transition: background 0.3s ease;
+}
 
-        .control-btn.active {
-            background-color: rgba(255,255,255,0.4);
-        }
+#image-ref-1 { top: 50%; left: 30%; transform: translate(-50%, -50%); }
+#text-ref-1  { top: 50%; left: 70%; transform: translate(-50%, -50%); width: 450px; }
 
-        #navigation-hint {
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 10;
-        color: #fff;
-        font-size: 16px;
-        opacity: 0.8;
-        background-color: rgba(0,0,0,0.6);
-        padding: 10px 20px;
-        border-radius: 20px;
+#image-ref-2 { top: 50%; left: 70%; transform: translate(-50%, -50%); }
+#text-ref-2  { top: 50%; left: 30%; transform: translate(-50%, -50%); width: 450px; }
+
+#image-ref-3 { top: 50%; left: 30%; transform: translate(-50%, -50%); }
+#text-ref-3  { top: 50%; left: 70%; transform: translate(-50%, -50%); width: 450px; }
+
+#image-ref-4 { top: 50%; left: 70%; transform: translate(-50%, -50%); }
+#text-ref-4  { top: 50%; left: 30%; transform: translate(-50%, -50%); width: 450px; }
+
+#image-ref-5 { top: 50%; left: 30%; transform: translate(-50%, -50%); }
+#text-ref-5  { top: 50%; left: 70%; transform: translate(-50%, -50%); width: 450px; }
+
+#image-ref-6 { top: 50%; left: 70%; transform: translate(-50%, -50%); }
+#text-ref-6  { top: 50%; left: 30%; transform: translate(-50%, -50%); width: 450px; }
+
+#welcome-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 20;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 1;
+    transition: opacity 0.8s ease-out;
+    pointer-events: none;
+}
+
+#welcome-overlay.fade-out {
+    opacity: 0;
+}
+
+#welcome-text {
+    text-align: center;
+    font-size: 24px;
+    line-height: 1.6;
+    max-width: 600px;
+    padding: 40px;
+    color: #ffffff;
+    font-weight: 300;
+}
+
+#welcome-text h1 {
+    font-size: 32px;
+    margin-bottom: 20px;
+    font-weight: 400;
+}
+
+#progress-indicator {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 10;
+    color: #fff;
+    font-size: 14px;
+    opacity: 0.8;
+    background-color: rgba(0,0,0,0.6);
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+#controls {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10;
+    display: flex;
+    gap: 10px;
+}
+
+.control-btn {
+    background-color: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background-color 0.3s;
+}
+
+.control-btn:hover {
+    background-color: rgba(255,255,255,0.3);
+}
+
+.control-btn.active {
+    background-color: rgba(255,255,255,0.4);
+}
+
+#navigation-hint {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    color: #fff;
+    font-size: 16px;
+    opacity: 0.8;
+    background-color: rgba(0,0,0,0.6);
+    padding: 10px 20px;
+    border-radius: 20px;
+    text-align: center;
+}
+
+body.scroll-mode {
+    overflow: auto;
+}
+
+body.scroll-mode #content-container {
+    width: 100vw;
+    height: 700vh; /* 7 seksjoner x 100vh */
+}
+
+body.scroll-mode .scroll-section {
+    position: relative;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100vw;
+    height: 100vh;
+}
+
+
+@media (max-width: 999px) {
+    .scroll-section {
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    /* Reset alle posisjonering for responsive layout */
+    #image-ref-1, #image-ref-2, #image-ref-3, 
+    #image-ref-4, #image-ref-5, #image-ref-6 {
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        transform: none !important;
+        margin-bottom: 60px;
+        width: 90vw !important;
+        max-width: 400px !important;
+        height: auto !important;
+    }
+
+    #text-ref-1, #text-ref-2, #text-ref-3,
+    #text-ref-4, #text-ref-5, #text-ref-6 {
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        transform: none !important;
+        width: 90vw !important;
+        max-width: 400px !important;
+        height: auto !important;
         text-align: center;
     }
+
+    /* Juster bildestørrelser for mindre skjermer */
+    .image-reference {
+        width: 90vw !important;
+        max-width: 400px !important;
+        height: auto !important;
+        aspect-ratio: 1; /* Behold kvadratisk form hvis ønskelig */
+    }
+
+    /* Juster tekststørrelser for mindre skjermer */
+    .text-reference {
+        width: 90vw !important;
+        max-width: 400px !important;
+        padding: 10px;
+        font-size: 14px;
+        line-height: 1.4;
+    }
+}
+
+/* For enda mindre skjermer (telefoner) */
+@media (max-width: 600px) {
+    .scroll-section {
+        padding: 15px;
+    }
+
+    #image-ref-1, #image-ref-2, #image-ref-3, 
+    #image-ref-4, #image-ref-5, #image-ref-6 {
+        width: 95vw !important;
+        max-width: 350px !important;
+        margin-bottom: 15px;
+    }
+
+    #text-ref-1, #text-ref-2, #text-ref-3,
+    #text-ref-4, #text-ref-5, #text-ref-6 {
+        width: 95vw !important;
+        max-width: 350px !important;
+        font-size: 12px;
+    }
+
+    /* Juster kontroller for mindre skjermer */
+    #controls {
+        top: 10px;
+        right: 10px;
+        gap: 5px;
+    }
+
+    .control-btn {
+        padding: 6px 8px;
+        font-size: 10px;
+    }
+
+    #progress-indicator {
+        top: 10px;
+        left: 10px;
+        font-size: 12px;
+        padding: 3px 6px;
+    }
+
+    #navigation-hint {
+        bottom: 10px;
+        font-size: 14px;
+        padding: 8px 15px;
+    }
+}
+
+/* Spesifikk justering for scroll modus på mindre skjermer */
+@media (max-width: 999px) {
+    body.scroll-mode #content-container {
+        width: 100vw !important;
+    }
+
+    body.scroll-mode .scroll-section {
+        position: relative !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100vw !important;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 40px 20px;
+        box-sizing: border-box;
+    }
+}
 
     </style>
 </head>
 <body>
+
+    <div id="welcome-overlay">
+        <div id="welcome-text">
+            <h1>Hi, I'm Johannes Worren Kløcker</h1>
+            <p>I believe all design should be interesting and create curiosity.<br>
+            Here's my portfolio.<br><br>
+            Use your arrow keys to explore.<br>
+            Happy exploring!</p>
+        </div>
+    </div>
+
+
+
     <canvas id="particle-canvas"></canvas>
     <div id="progress-indicator"></div>
-    <div id="autoscroll-controls">
-        <button class="control-btn" id="autoscroll-btn">Start Autoscroll</button>
+    <div id="controls">
+        <button class="control-btn" id="scroll-mode-btn">Scroll Modus</button>
         <button class="control-btn" id="reset-btn">Reset</button>
     </div>
 
     <div id="navigation-hint">Bruk piltastene for å navigere</div>
     
     <div id="content-container">
-        <div class="scroll-section"><div id="image-ref-1" class="image-reference"></div><div id="text-ref-1" class="text-reference"></div></div>
-        <div class="scroll-section"><div id="image-ref-2" class="image-reference"></div><div id="text-ref-2" class="text-reference"></div></div>
-        <div class="scroll-section"><div id="image-ref-3" class="image-reference"></div><div id="text-ref-3" class="text-reference"></div></div>
-        <div class="scroll-section"><div id="image-ref-4" class="image-reference"></div><div id="text-ref-4" class="text-reference"></div></div>
-        <div class="scroll-section"><div id="image-ref-5" class="image-reference"></div><div id="text-ref-5" class="text-reference"></div></div>
-        <div class="scroll-section"><div id="image-ref-6" class="image-reference"></div><div id="text-ref-6" class="text-reference"></div></div>
+        <div class="scroll-section">
+            <div id="image-ref-1" class="image-reference">
+                <a href="https://jwk.no/ludo" class="image-clickable" target="_blank"></a>
+            </div>
+            <div id="text-ref-1" class="text-reference"></div>
+        </div>
+        <div class="scroll-section">
+            <div id="image-ref-2" class="image-reference">
+                <a href="https://jwk.no/stolen" class="image-clickable" target="_blank"></a>
+            </div>
+            <div id="text-ref-2" class="text-reference"></div>
+        </div>
+        <div class="scroll-section">
+            <div id="image-ref-3" class="image-reference">
+                <a href="https://jwk.no/oval" class="image-clickable" target="_blank"></a>
+            </div>
+            <div id="text-ref-3" class="text-reference"></div>
+        </div>
+        <div class="scroll-section">
+            <div id="image-ref-4" class="image-reference">
+                <a href="https://jwk.no/front" class="image-clickable" target="_blank"></a>
+            </div>
+            <div id="text-ref-4" class="text-reference"></div>
+        </div>
+        <div class="scroll-section">
+            <div id="image-ref-5" class="image-reference">
+                <a href="https://jwk.no/dorhondtak" class="image-clickable" target="_blank"></a>
+            </div>
+            <div id="text-ref-5" class="text-reference"></div>
+        </div>
+        <div class="scroll-section">
+            <div id="image-ref-6" class="image-reference">
+                <a href="https://jwk.no/benk" class="image-clickable" target="_blank"></a>
+            </div>
+            <div id="text-ref-6" class="text-reference"></div>
+        </div>
     </div>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -159,17 +393,17 @@
                 'https://jwk.no/bubbles%202/pictures/index/benk.jpg'
             ],
             TEXTS: [
-                { text: "Velkommen til min portefølje\nTrykk Start Autoscroll eller bruk piltastene", fontSize: 40, color: '#ffffff' },
+                { text: "Velkommen til min portefølje\nTrykk Scroll Modus eller bruk piltastene", fontSize: 40, color: '#ffffff' },
                 { text: "Hvert design er bygget opp\nav tusenvis av lyspunkt", fontSize: 32, color: '#ffffff' },
                 { text: "Form og farge flyter over\ni en sømløs overgang", fontSize: 32, color: '#ffffff' },
                 { text: "Teksten følger den samme\nreisen som bildene", fontSize: 32, color: '#ffffff' },
                 { text: "Drevet av Three.js\nog en custom partikkelmotor", fontSize: 32, color: '#ffffff' },
                 { text: "Takk for at du tok deg tid\ntil å se på prosjektet", fontSize: 32, color: '#ffffff' }
             ],
-            MAX_DIMENSION: 600, PARTICLE_SIZE: 0.8, TEXT_PARTICLE_SIZE: 1.5,
+            MAX_DIMENSION: 600, PARTICLE_SIZE: 0.5, TEXT_PARTICLE_SIZE: 0.15, // Justert tilbake til rimelig størrelse
             CAMERA_SMOOTHING: 0.8,
-            BUILD_WAVE_DELAY: 0.4, BUILD_START_DISTANCE: 200, TRANSITION_WAVE_DELAY: 0.2,
-            BUILD_CHAOS_STRENGTH: 5000, TRANSITION_CHAOS_STRENGTH: 800,
+            BUILD_WAVE_DELAY: 0.8, BUILD_START_DISTANCE: 100, TRANSITION_WAVE_DELAY: 0.2,
+            BUILD_CHAOS_STRENGTH: 5000, TRANSITION_CHAOS_STRENGTH: 100,
             AMBIENT_STRENGTH: 100, AMBIENT_SPEED: 0.15,
         };
 
@@ -188,8 +422,7 @@
 
         let currentStopIndex = 0;
         let isAnimatingScroll = false;
-        let isAutoScrolling = false;
-        let autoScrollInterval = null;
+        let isScrollMode = false;
         
         // NYTT: Bruker -1 for å indikere oppløst tilstand (seksjon 1)
         let currentSection = -1; // -1 = oppløst, 0 = første bilde/tekst, 1 = andre bilde/tekst, osv.
@@ -199,7 +432,11 @@
         let toIndex = 0;
         
         const TRANSITION_DURATION = 5.0;
-        const AUTOSCROLL_DELAY = 1000;
+        
+        // Scroll dampening variabler
+        let targetScrollProgress = 0;
+        let currentScrollProgress = 0;
+        const SCROLL_DAMPENING = 0.08; // Juster denne verdien for mer/mindre dampening (lavere = mer dampening)
 
         const lerp = (a, b, t) => a + (b - a) * t;
         const easeOutQuart = t => 1 - Math.pow(1 - t, 4);
@@ -207,6 +444,8 @@
 
         function getTextPixelData(text, fontSize, color) {
             const dpr = window.devicePixelRatio || 3;
+            const SAMPLING_DENSITY = 3; // Øk denne verdien for mindre density (mer spacing mellom partikler)
+            
             const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
             ctx.font = `bold ${fontSize * dpr}px 'Helvetica Neue', sans-serif`;
             const lines = text.split('\n');
@@ -219,8 +458,10 @@
             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height); const data = imageData.data;
             const pixels = [];
             let minY = Infinity, maxY = -Infinity;
-            for (let y = 0; y < canvas.height; y++) {
-                for (let x = 0; x < canvas.width; x++) {
+            
+            // Sample hver SAMPLING_DENSITY piksel i stedet for hver piksel
+            for (let y = 0; y < canvas.height; y += SAMPLING_DENSITY) {
+                for (let x = 0; x < canvas.width; x += SAMPLING_DENSITY) {
                     if (data[(y * canvas.width + x) * 4 + 3] > 200) {
                         const rY = -y/dpr + (canvas.height/2/dpr);
                         if (rY < minY) minY = rY; if (rY > maxY) maxY = rY;
@@ -277,11 +518,23 @@
                 ctx.drawImage(tex.image, 0, 0, displayW, displayH);
                 return ctx.getImageData(0, 0, displayW, displayH).data;
             });
+            
+            const IMAGE_SAMPLING_DENSITY = 1; // Øk denne verdien for mindre density
+            
             let particlePresence = new Uint8Array(displayW * displayH).fill(0);
-            allImageData.forEach(data => { for (let i = 0; i < data.length; i += 4) if (data[i + 3] > 128) particlePresence[i / 4] = 1; });
+            allImageData.forEach(data => { 
+                // Sample med density intervaller
+                for (let y = 0; y < displayH; y += IMAGE_SAMPLING_DENSITY) {
+                    for (let x = 0; x < displayW; x += IMAGE_SAMPLING_DENSITY) {
+                        const i = (y * displayW + x) * 4;
+                        if (data[i + 3] > 128) particlePresence[y * displayW + x] = 1;
+                    }
+                }
+            });
+            
             let imgMinY = Infinity, imgMaxY = -Infinity;
-            for (let y = 0; y < displayH; y++) {
-                for (let x = 0; x < displayW; x++) {
+            for (let y = 0; y < displayH; y += IMAGE_SAMPLING_DENSITY) {
+                for (let x = 0; x < displayW; x += IMAGE_SAMPLING_DENSITY) {
                     if (particlePresence[y * displayW + x]) {
                         const rY = -y + displayH / 2;
                         if (rY < imgMinY) imgMinY = rY; if (rY > imgMaxY) imgMaxY = rY;
@@ -314,167 +567,243 @@
 
             createGeometry();
             setupNavigation();
-            setupAutoScroll();
+            setupControls();
             
-            // Start med oppløste partikler (seksjon -1)
-            currentSection = -1;
-            fromIndex = 0;
-            toIndex = 0;
-            transitionState.progress = 1.0;
-            transitionState.buildProgress = 0.0;
-            
-            const startSection = scrollSections[0];
-            const initialX = startSection.offsetLeft + startSection.offsetWidth / 2 - window.innerWidth / 2;
-            const initialY = startSection.offsetTop + startSection.offsetHeight / 2 - window.innerHeight / 2;
-            window.scrollTo(initialX, initialY);
+         // Start med oppløste partikler (seksjon -1)
+currentSection = -1;
+fromIndex = 0;
+toIndex = 0;
+transitionState.progress = 1.0;
+transitionState.buildProgress = 0.0;
+targetScrollProgress = 0;
+currentScrollProgress = 0;
 
-            // Touch swipe detection og prevent native scrolling
-                let touchStartY = 0;
-                let touchStartTime = 0;
+const startSection = scrollSections[0];
+const initialX = startSection.offsetLeft + startSection.offsetWidth / 2 - window.innerWidth / 2;
+const initialY = startSection.offsetTop + startSection.offsetHeight / 2 - window.innerHeight / 2;
+window.scrollTo(initialX, initialY);
 
-                document.addEventListener('touchstart', (e) => {
-                    if (e.target.tagName !== 'BUTTON') {
-                        e.preventDefault();
-                        touchStartY = e.touches[0].clientY;
-                        touchStartTime = Date.now();
-                    }
-                }, { passive: false });
+// Touch swipe detection og prevent native scrolling
+let touchStartY = 0;
+let touchStartTime = 0;
 
-                document.addEventListener('touchmove', (e) => {
-                    e.preventDefault();
-                }, { passive: false });
+document.addEventListener('touchstart', (e) => {
+    if (e.target.tagName !== 'BUTTON' && !isScrollMode) {
+        e.preventDefault();
+        touchStartY = e.touches[0].clientY;
+        touchStartTime = Date.now();
+    }
+}, { passive: false });
 
-                document.addEventListener('touchend', (e) => {
-                    if (e.target.tagName !== 'BUTTON') {
-                        e.preventDefault();
-                        
-                        const touchEndY = e.changedTouches[0].clientY;
-                        const touchEndTime = Date.now();
-                        const deltaY = touchStartY - touchEndY;
-                        const deltaTime = touchEndTime - touchStartTime;
-                        
-                        // Sjekk for gyldig swipe (minimum 50px, maksimum 500ms)
-                        if (Math.abs(deltaY) > 50 && deltaTime < 500) {
-                            if (isAnimatingScroll) return;
-                            
-                            if (isAutoScrolling) {
-                                stopAutoScroll();
-                            }
-                            
-                            if (deltaY > 0) {
-                                // Swipe opp = neste seksjon
-                                if (currentSection < scrollSections.length - 1) {
-                                    navigateToSection(currentSection + 1);
-                                }
-                            } else {
-                                // Swipe ned = forrige seksjon
-                                if (currentSection > -1) {
-                                    navigateToSection(currentSection - 1);
-                                }
-                            }
-                        }
-                    }
-                }, { passive: false });
-            
-            requestAnimationFrame(() => {
-                animate(); 
-                document.body.style.visibility = 'visible';
-            });
-        }
+document.addEventListener('touchmove', (e) => {
+    if (!isScrollMode) {
+        e.preventDefault();
+    }
+}, { passive: false });
+
+document.addEventListener('touchend', (e) => {
+    if (e.target.tagName !== 'BUTTON' && !isScrollMode) {
+        e.preventDefault();
         
-        function setupNavigation() {
-             window.addEventListener('keydown', (e) => {
-                if (isAnimatingScroll) return;
-                
-                if (isAutoScrolling) {
-                    stopAutoScroll();
-                }
-                
-                if (e.key === 'ArrowDown') {
-                    if (currentSection < scrollSections.length - 1) {
-                        const nextSection = currentSection + 1;
-                        navigateToSection(nextSection);
-                    }
-                } else if (e.key === 'ArrowUp') {
-                    if (currentSection > -1) {
-                        const prevSection = currentSection - 1;
-                        navigateToSection(prevSection);
-                    }
-                }
-            });
-        }
-
-        function setupAutoScroll() {
-            const autoscrollBtn = document.getElementById('autoscroll-btn');
-            const resetBtn = document.getElementById('reset-btn');
-
-            autoscrollBtn.addEventListener('click', () => {
-                if (isAutoScrolling) {
-                    stopAutoScroll();
-                } else {
-                    startAutoScroll();
-                }
-            });
-
-            resetBtn.addEventListener('click', () => {
-                resetToStart();
-            });
-        }
-
-        function startAutoScroll() {
+        const touchEndY = e.changedTouches[0].clientY;
+        const touchEndTime = Date.now();
+        const deltaY = touchStartY - touchEndY;
+        const deltaTime = touchEndTime - touchStartTime;
+        
+        // Sjekk for gyldig swipe (minimum 50px, maksimum 500ms)
+        if (Math.abs(deltaY) > 50 && deltaTime < 500) {
             if (isAnimatingScroll) return;
             
-            isAutoScrolling = true;
-            document.getElementById('autoscroll-btn').textContent = 'Stopp Autoscroll';
-            document.getElementById('autoscroll-btn').classList.add('active');
-            
-            // Start autoscroll med riktig delay
-            autoScrollInterval = setTimeout(() => {
-                autoScrollNext();
-            }, AUTOSCROLL_DELAY);
+            if (deltaY > 0) {
+                // Swipe opp = neste seksjon
+                if (currentSection < scrollSections.length - 1) {
+                    navigateToSection(currentSection + 1);
+                }
+            } else {
+                // Swipe ned = forrige seksjon
+                if (currentSection > -1) {
+                    navigateToSection(currentSection - 1);
+                }
+            }
+        }
+    }
+}, { passive: false });
+
+requestAnimationFrame(() => {
+    animate(); 
+    document.body.style.visibility = 'visible';
+});
+}
+function setupNavigation() {
+    // Welcome overlay håndtering
+    let welcomeShown = true;
+    const welcomeOverlay = document.getElementById('welcome-overlay');
+
+    function hideWelcome() {
+        if (welcomeShown) {
+            welcomeOverlay.classList.add('fade-out');
+            setTimeout(() => {
+                welcomeOverlay.style.display = 'none';
+            }, 800);
+            welcomeShown = false;
+        }
+    }
+
+    // Touch for welcome
+    document.addEventListener('touchstart', hideWelcome, { passive: true });
+
+    // Kombinert keyboard listener
+    window.addEventListener('keydown', (e) => {
+        // Sjekk welcome først
+        if (welcomeShown && (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+            hideWelcome();
+            return; // Stop her så navigasjon ikke skjer samtidig
         }
 
-        function stopAutoScroll() {
-            if (!isAutoScrolling) return;
+        // Så vanlig navigasjon
+        if (isAnimatingScroll || isScrollMode) return;
+        
+        if (e.key === 'ArrowDown') {
+            if (currentSection < scrollSections.length - 1) {
+                const nextSection = currentSection + 1;
+                navigateToSection(nextSection);
+            }
+        } else if (e.key === 'ArrowUp') {
+            if (currentSection > -1) {
+                const prevSection = currentSection - 1;
+                navigateToSection(prevSection);
+            }
+        }
+    });
+}
+
+function setupControls() {
+    const scrollModeBtn = document.getElementById('scroll-mode-btn');
+    const resetBtn = document.getElementById('reset-btn');
+
+    scrollModeBtn.addEventListener('click', () => {
+        if (isScrollMode) {
+            exitScrollMode();
+        } else {
+            enterScrollMode();
+        }
+    });
+
+    resetBtn.addEventListener('click', () => {
+        resetToStart();
+    });
+}
+        function enterScrollMode() {
+            isScrollMode = true;
+            document.body.classList.add('scroll-mode');
+            document.getElementById('scroll-mode-btn').textContent = 'Piltast Modus';
+            document.getElementById('scroll-mode-btn').classList.add('active');
+            document.getElementById('navigation-hint').textContent = 'Bruk scrollhjulet for å navigere';
             
-            isAutoScrolling = false;
-            if (autoScrollInterval) {
-                clearTimeout(autoScrollInterval);
-                autoScrollInterval = null;
+            // Synkroniser scroll progress med nåværende tilstand
+            if (currentSection === -1) {
+                // Hvis vi er i oppløst tilstand, map buildProgress til scroll position
+                const oppløstProgress = 1 - transitionState.buildProgress; // 0 = fullt bygget, 1 = fullt oppløst
+                targetScrollProgress = oppløstProgress * 0.5 / (scrollSections.length + 1); // Første halvdel av første seksjon
+                currentScrollProgress = targetScrollProgress;
+            } else {
+                // Hvis vi er i en faktisk seksjon
+                const sectionProgress = transitionState.progress;
+                targetScrollProgress = (1 + currentSection + sectionProgress) / (scrollSections.length + 1);
+                currentScrollProgress = targetScrollProgress;
             }
             
-            document.getElementById('autoscroll-btn').textContent = 'Start Autoscroll';
-            document.getElementById('autoscroll-btn').classList.remove('active');
+            // Scroll til riktig posisjon
+            const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+            window.scrollTo(0, targetScrollProgress * maxScroll);
+            
+            // Legg til scroll listener
+            window.addEventListener('scroll', handleScroll);
         }
 
-        function autoScrollNext() {
-            if (!isAutoScrolling) return;
+        function exitScrollMode() {
+            isScrollMode = false;
+            document.body.classList.remove('scroll-mode');
+            document.getElementById('scroll-mode-btn').textContent = 'Scroll Modus';
+            document.getElementById('scroll-mode-btn').classList.remove('active');
+            document.getElementById('navigation-hint').textContent = 'Bruk piltastene for å navigere';
             
-            // Gå til neste seksjon, eller tilbake til start
-            const nextSection = currentSection < scrollSections.length - 1 ? currentSection + 1 : -1;
-            navigateToSection(nextSection);
+            // Fjern scroll listener
+            window.removeEventListener('scroll', handleScroll);
             
-            // Sett opp neste autoscroll
-            autoScrollInterval = setTimeout(() => {
-                autoScrollNext();
-            }, AUTOSCROLL_DELAY);
+            // Bevar nåværende tilstand i stedet for å resette
+            if (currentSection >= 0) {
+                const section = scrollSections[currentSection];
+                const targetX = section.offsetLeft + section.offsetWidth / 2 - window.innerWidth / 2;
+                const targetY = section.offsetTop + section.offsetHeight / 2 - window.innerHeight / 2;
+                window.scrollTo(targetX, targetY);
+                currentStopIndex = currentSection;
+            } else {
+                // Hvis vi er i oppløst tilstand, gå til start layout
+                const startSection = scrollSections[0];
+                const initialX = startSection.offsetLeft + startSection.offsetWidth / 2 - window.innerWidth / 2;
+                const initialY = startSection.offsetTop + startSection.offsetHeight / 2 - window.innerHeight / 2;
+                window.scrollTo(initialX, initialY);
+            }
         }
 
-        function resetToStart() {
-            stopAutoScroll();
+        function handleScroll() {
+            if (!isScrollMode) return;
             
-            // Reset til oppløst tilstand (seksjon -1)
-            currentSection = -1;
-            transitionState.buildProgress = 0.0;
-            transitionState.progress = 1.0;
-            currentStopIndex = 0;
-            fromIndex = 0;
-            toIndex = 0;
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+            targetScrollProgress = Math.max(0, Math.min(1, scrollTop / maxScroll));
+        }
+
+        function updateScrollAnimation() {
+            if (!isScrollMode) return;
             
-            const startSection = scrollSections[0];
-            const initialX = startSection.offsetLeft + startSection.offsetWidth / 2 - window.innerWidth / 2;
-            const initialY = startSection.offsetTop + startSection.offsetHeight / 2 - window.innerHeight / 2;
-            window.scrollTo(initialX, initialY);
+            // Smooth dampening mot target scroll progress
+            currentScrollProgress = lerp(currentScrollProgress, targetScrollProgress, SCROLL_DAMPENING);
+            
+            // Konverter dampened scroll progress til seksjon og intern progress
+            const totalSections = scrollSections.length + 1; // +1 for oppløst tilstand
+            const adjustedProgress = currentScrollProgress * totalSections;
+            
+            if (adjustedProgress <= 1) {
+                // I oppløst tilstand eller overgang til første seksjon
+                if (adjustedProgress <= 0.5) {
+                    // Fullt oppløst tilstand (seksjon -1)
+                    currentSection = -1;
+                    transitionState.buildProgress = 0.0;
+                    transitionState.progress = 1.0;
+                    fromIndex = 0;
+                    toIndex = 0;
+                } else {
+                    // Overgang fra oppløst til første seksjon
+                    currentSection = 0;
+                    fromIndex = 0;
+                    toIndex = 0;
+                    transitionState.progress = 1.0;
+                    // BuildProgress går fra 0 til 1 når vi går fra oppløst til første seksjon
+                    transitionState.buildProgress = (adjustedProgress - 0.5) * 2; // Mapper 0.5-1.0 til 0-1
+                }
+            } else {
+                // I en av bildeseksjonene (1 til N)
+                const sectionIndex = Math.floor(adjustedProgress - 1);
+                const sectionProgress = (adjustedProgress - 1) % 1;
+                
+                currentSection = Math.min(sectionIndex, scrollSections.length - 1);
+                
+                if (sectionIndex < scrollSections.length - 1) {
+                    // Overgang mellom to seksjoner
+                    fromIndex = sectionIndex;
+                    toIndex = sectionIndex + 1;
+                    transitionState.progress = sectionProgress;
+                    transitionState.buildProgress = 1.0;
+                } else {
+                    // Siste seksjon
+                    fromIndex = scrollSections.length - 1;
+                    toIndex = scrollSections.length - 1;
+                    transitionState.progress = 1.0;
+                    transitionState.buildProgress = 1.0;
+                }
+            }
         }
 
         function navigateToSection(targetSection) {
@@ -524,9 +853,25 @@
             }
         }
 
-        // Bakoverkompatibilitet
-        function navigateTo(stopIndex) {
-            navigateToSection(stopIndex);
+        function resetToStart() {
+            if (isScrollMode) {
+                window.scrollTo(0, 0);
+                targetScrollProgress = 0;
+                currentScrollProgress = 0;
+            } else {
+                // Reset til oppløst tilstand (seksjon -1)
+                currentSection = -1;
+                transitionState.buildProgress = 0.0;
+                transitionState.progress = 1.0;
+                currentStopIndex = 0;
+                fromIndex = 0;
+                toIndex = 0;
+                
+                const startSection = scrollSections[0];
+                const initialX = startSection.offsetLeft + startSection.offsetWidth / 2 - window.innerWidth / 2;
+                const initialY = startSection.offsetTop + startSection.offsetHeight / 2 - window.innerHeight / 2;
+                window.scrollTo(initialX, initialY);
+            }
         }
         
         function createGeometry() {
@@ -554,11 +899,15 @@
             requestAnimationFrame(animate);
             const time = clock.getElapsedTime();
             
+            // Oppdater scroll animasjon med dampening
+            updateScrollAnimation();
+            
             const localProgress = transitionState.progress;
             const buildProgress = transitionState.buildProgress;
 
             const sectionText = currentSection === -1 ? "Oppløst" : `Seksjon ${currentSection + 1}`;
-            document.getElementById('progress-indicator').textContent = `${sectionText} | Build: ${(buildProgress * 100).toFixed(0)}% ${isAutoScrolling ? '| AutoScroll: ON' : ''}`;
+            const modeText = isScrollMode ? "Scroll Modus" : "Piltast Modus";
+            document.getElementById('progress-indicator').textContent = `${sectionText} | Build: ${(buildProgress * 100).toFixed(0)}% | ${modeText}`;
             
             const currentChaosStrength = lerp(settings.BUILD_CHAOS_STRENGTH, settings.TRANSITION_CHAOS_STRENGTH, easeOutQuart(buildProgress));
             

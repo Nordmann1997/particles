@@ -5,9 +5,14 @@
     
     <title>Partikkel-Portfolio med Dynamisk Layout</title>
     <style>
-          body { 
+
+
+body { 
     margin: 0; 
     background: linear-gradient(135deg, rgb(0, 4, 19) 0%, rgb(41, 55, 82) 50%, rgb(0, 4, 19) 100%);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
     color: #fff; 
     font-family: 'Helvetica Neue', sans-serif; 
     overflow: hidden; 
@@ -190,6 +195,114 @@ body.scroll-mode .scroll-section {
 }
 
 
+
+/* Progress Bar Styles */
+#progress-bar-container {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 15;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 115px;
+   
+    padding: 15px 25px;
+    border-radius: 30px;
+   
+    
+   
+}
+
+/* Horisontal linje i midten */
+#progress-bar-container::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    
+    height: 10px;
+    width: 90%;
+    background: linear-gradient(to right, 
+        rgba(255, 255, 255, 0.1), 
+        rgba(255, 255, 255, 0.3), 
+        rgba(255, 255, 255, 0.1));
+    transform: translateY(-50%);
+    z-index: 0;
+}
+
+.progress-dot {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 1.0s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    
+   
+    background-size: cover;
+    background-position: center;
+    
+}
+
+.progress-dot:hover {
+    
+    transform: scale(1.4);
+}
+
+.progress-dot.active {
+    border: 1px solid rgb(255, 255, 255);
+    transform: scale(1.4);
+    box-shadow: 0 0 2px rgba(255, 255, 255, 0.6);
+
+
+}
+
+.progress-dot.dissolved {
+    background: rgba(100, 150, 255, 0.7);
+    box-shadow: 0 0 8px rgba(100, 150, 255, 0.5);
+}
+
+.progress-dot::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: -35px;
+    left: 50%;
+    transform: translateX(-50%);
+    
+    color: rgb(255, 255, 255);
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 15px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    font-weight: 400;
+    z-index: 10;
+}
+
+.progress-dot:hover::after {
+    opacity: 1;
+}
+
+.progress-dot.active::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: -35px;
+    left: 50%;
+    transform: translateX(-50%);
+    
+    color: #e8e8e8;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 15px;
+    white-space: nowrap;
+    font-weight: 400;
+    z-index: 10;
+}
+
+
 @media (max-width: 999px) {
     .scroll-section {
         flex-direction: column;
@@ -323,6 +436,19 @@ body.scroll-mode .scroll-section {
         </div>
     </div>
 
+    <!-- Progress Bar -->
+    <div id="progress-bar-container">
+    
+        <div class="progress-dot" data-tooltip="Ludo" data-section="0"></div>
+        <div class="progress-dot" data-tooltip="Stolen" data-section="1"></div>
+        <div class="progress-dot" data-tooltip="Oval" data-section="2"></div>
+        <div class="progress-dot" data-tooltip="Front" data-section="3"></div>
+        <div class="progress-dot" data-tooltip="Dørhåndtak" data-section="4"></div>
+        <div class="progress-dot" data-tooltip="Benk" data-section="5"></div>
+    </div>
+
+    
+
 
 
     <canvas id="particle-canvas"></canvas>
@@ -401,7 +527,7 @@ body.scroll-mode .scroll-section {
                 { text: "Takk for at du tok deg tid\ntil å se på prosjektet", fontSize: 32, color: '#ffffff' }
             ],
             MAX_DIMENSION: 600, PARTICLE_SIZE: 0.5, TEXT_PARTICLE_SIZE: 0.15, // Justert tilbake til rimelig størrelse
-            CAMERA_SMOOTHING: 0.8,
+            CAMERA_SMOOTHING: 0.1,
             BUILD_WAVE_DELAY: 0.8, BUILD_START_DISTANCE: 100, TRANSITION_WAVE_DELAY: 0.2,
             BUILD_CHAOS_STRENGTH: 5000, TRANSITION_CHAOS_STRENGTH: 100,
             AMBIENT_STRENGTH: 100, AMBIENT_SPEED: 0.15,
@@ -431,7 +557,7 @@ body.scroll-mode .scroll-section {
         let fromIndex = 0;
         let toIndex = 0;
         
-        const TRANSITION_DURATION = 5.0;
+        const TRANSITION_DURATION = 4.0;
         
         // Scroll dampening variabler
         let targetScrollProgress = 0;
@@ -442,9 +568,43 @@ body.scroll-mode .scroll-section {
         const easeOutQuart = t => 1 - Math.pow(1 - t, 4);
         const easeInOutCubic = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 
+        // Progress Bar Functions
+        function updateProgressBar() {
+    const dots = document.querySelectorAll('.progress-dot');
+    
+    dots.forEach((dot, index) => {
+        const sectionIndex = parseInt(dot.dataset.section);
+        dot.classList.remove('active');
+        
+        if (currentSection === sectionIndex) {
+            dot.classList.add('active');
+        }
+    });
+}
+
+function setupProgressBar() {
+    const dots = document.querySelectorAll('.progress-dot');
+    
+    // Set background images for product dots
+    const imageUrls = settings.IMAGE_URLS;
+    dots.forEach((dot, index) => {
+        const sectionIndex = parseInt(dot.dataset.section);
+        if (sectionIndex >= 0 && sectionIndex < imageUrls.length) {
+            dot.style.backgroundImage = `url('${imageUrls[sectionIndex]}')`;
+        }
+        
+        dot.addEventListener('click', () => {
+            const targetSection = parseInt(dot.dataset.section);
+            if (targetSection !== currentSection && !isAnimatingScroll) {
+                navigateToSection(targetSection);
+            }
+        });
+    });
+}
+
         function getTextPixelData(text, fontSize, color) {
             const dpr = window.devicePixelRatio || 3;
-            const SAMPLING_DENSITY = 3; // Øk denne verdien for mindre density (mer spacing mellom partikler)
+            const SAMPLING_DENSITY = 2; // Øk denne verdien for mindre density (mer spacing mellom partikler)
             
             const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
             ctx.font = `bold ${fontSize * dpr}px 'Helvetica Neue', sans-serif`;
@@ -490,7 +650,7 @@ body.scroll-mode .scroll-section {
             const startX = containerW / 2;
             const startY = 0;
             positions.push({ x: startX, y: startY });
-            const minDistance = window.innerWidth * 0.8; 
+            const minDistance = window.innerWidth * 1.5; 
             for (let i = 1; i < scrollSections.length; i++) {
                 let newPos;
                 let attempts = 0;
@@ -568,6 +728,7 @@ body.scroll-mode .scroll-section {
             createGeometry();
             setupNavigation();
             setupControls();
+            setupProgressBar();
             
          // Start med oppløste partikler (seksjon -1)
 currentSection = -1;
@@ -588,7 +749,7 @@ let touchStartY = 0;
 let touchStartTime = 0;
 
 document.addEventListener('touchstart', (e) => {
-    if (e.target.tagName !== 'BUTTON' && !isScrollMode) {
+    if (e.target.tagName !== 'BUTTON' && !e.target.classList.contains('progress-dot') && !isScrollMode) {
         e.preventDefault();
         touchStartY = e.touches[0].clientY;
         touchStartTime = Date.now();
@@ -602,7 +763,7 @@ document.addEventListener('touchmove', (e) => {
 }, { passive: false });
 
 document.addEventListener('touchend', (e) => {
-    if (e.target.tagName !== 'BUTTON' && !isScrollMode) {
+    if (e.target.tagName !== 'BUTTON' && !e.target.classList.contains('progress-dot') && !isScrollMode) {
         e.preventDefault();
         
         const touchEndY = e.changedTouches[0].clientY;
@@ -618,11 +779,13 @@ document.addEventListener('touchend', (e) => {
                 // Swipe opp = neste seksjon
                 if (currentSection < scrollSections.length - 1) {
                     navigateToSection(currentSection + 1);
+                    
                 }
             } else {
                 // Swipe ned = forrige seksjon
                 if (currentSection > -1) {
                     navigateToSection(currentSection - 1);
+                    
                 }
             }
         }
@@ -632,6 +795,8 @@ document.addEventListener('touchend', (e) => {
 requestAnimationFrame(() => {
     animate(); 
     document.body.style.visibility = 'visible';
+    
+    
 });
 }
 function setupNavigation() {
@@ -667,11 +832,13 @@ function setupNavigation() {
             if (currentSection < scrollSections.length - 1) {
                 const nextSection = currentSection + 1;
                 navigateToSection(nextSection);
+                
             }
         } else if (e.key === 'ArrowUp') {
             if (currentSection > -1) {
                 const prevSection = currentSection - 1;
                 navigateToSection(prevSection);
+                
             }
         }
     });
@@ -691,6 +858,7 @@ function setupControls() {
 
     resetBtn.addEventListener('click', () => {
         resetToStart();
+        updateProgressBar();
     });
 }
         function enterScrollMode() {
@@ -807,53 +975,39 @@ function setupControls() {
         }
 
         function navigateToSection(targetSection) {
-            if (targetSection < -1 || targetSection >= scrollSections.length) return;
+    if (targetSection < 0 || targetSection >= scrollSections.length) return; // Endret fra -1 til 0
 
-            isAnimatingScroll = true;
-            
-            if (targetSection === -1) {
-                // Gå tilbake til oppløst tilstand
-                const tl = gsap.timeline({
-                    onComplete: () => {
-                        isAnimatingScroll = false;
-                        currentSection = -1;
-                    }
-                });
-                
-                tl.to(transitionState, { 
-                    buildProgress: 0.0, 
-                    duration: TRANSITION_DURATION, 
-                    ease: "power3.inOut" 
-                });
-                
-            } else {
-                // Gå til et bilde/tekst
-                const section = scrollSections[targetSection];
-                const targetX = section.offsetLeft + section.offsetWidth / 2 - window.innerWidth / 2;
-                const targetY = section.offsetTop + section.offsetHeight / 2 - window.innerHeight / 2;
-                
-                fromIndex = currentStopIndex;
-                toIndex = targetSection;
-                
-                const ease = "power3.inOut";
+    // Oppdater progress bar med en gang vi starter navigasjonen
+    currentSection = targetSection;
+    updateProgressBar();
+    
+    isAnimatingScroll = true;
+    
+    const section = scrollSections[targetSection];
+    const targetX = section.offsetLeft + section.offsetWidth / 2 - window.innerWidth / 2;
+    const targetY = section.offsetTop + section.offsetHeight / 2 - window.innerHeight / 2;
+    
+    fromIndex = currentStopIndex;
+    toIndex = targetSection;
+    
+    const ease = "power2.inOut";
 
-                const tl = gsap.timeline({
-                    onComplete: () => {
-                        isAnimatingScroll = false;
-                        currentSection = targetSection;
-                        currentStopIndex = targetSection;
-                    }
-                });
-
-                tl.to(window, { scrollTo: { x: targetX, y: targetY }, duration: TRANSITION_DURATION, ease: ease }, 0);
-                
-                transitionState.progress = 0;
-                tl.to(transitionState, { progress: 1.0, duration: TRANSITION_DURATION, ease: ease }, 0);
-                tl.to(transitionState, { buildProgress: 1.0, duration: TRANSITION_DURATION, ease: ease }, 0);
-            }
+    const tl = gsap.timeline({
+        onComplete: () => {
+            isAnimatingScroll = false;
+            currentStopIndex = targetSection;
         }
+    });
+
+    tl.to(window, { scrollTo: { x: targetX, y: targetY }, duration: TRANSITION_DURATION, ease: ease }, 0);
+    
+    transitionState.progress = 0;
+    tl.to(transitionState, { progress: 1.0, duration: TRANSITION_DURATION, ease: ease }, 0);
+    tl.to(transitionState, { buildProgress: 1.0, duration: TRANSITION_DURATION, ease: ease }, 0);
+}
 
         function resetToStart() {
+            updateProgressBar();
             if (isScrollMode) {
                 window.scrollTo(0, 0);
                 targetScrollProgress = 0;
@@ -896,18 +1050,28 @@ function setupControls() {
         };
 
         function animate() {
-            requestAnimationFrame(animate);
-            const time = clock.getElapsedTime();
-            
-            // Oppdater scroll animasjon med dampening
-            updateScrollAnimation();
-            
-            const localProgress = transitionState.progress;
-            const buildProgress = transitionState.buildProgress;
+    requestAnimationFrame(animate);
+    const time = clock.getElapsedTime();
+    
+    // Oppdater scroll animasjon med dampening
+    updateScrollAnimation();
+    
+    // Oppdater progress bar kontinuerlig i scroll mode
+    if (isScrollMode) {
+        updateProgressBar();
+    }
+    
+    const localProgress = transitionState.progress;
+    const buildProgress = transitionState.buildProgress;
+    
 
             const sectionText = currentSection === -1 ? "Oppløst" : `Seksjon ${currentSection + 1}`;
             const modeText = isScrollMode ? "Scroll Modus" : "Piltast Modus";
             document.getElementById('progress-indicator').textContent = `${sectionText} | Build: ${(buildProgress * 100).toFixed(0)}% | ${modeText}`;
+
+            if (isScrollMode) {
+    
+}
             
             const currentChaosStrength = lerp(settings.BUILD_CHAOS_STRENGTH, settings.TRANSITION_CHAOS_STRENGTH, easeOutQuart(buildProgress));
             
